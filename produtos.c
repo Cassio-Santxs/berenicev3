@@ -51,9 +51,6 @@ void menuDeProdutos( cadastro_produtos **ptrProdutos,
                     printf("\n\aAVISO: Você não possui produtos cadastrados.\n");
                 }
 
-                printf("\n\nVocê será redirecinado ao menu de produtos. Aperte qualquer tecla para continuar.");
-                scanf("%c", &voltar);
-
                 break;
 
             case 2:
@@ -108,9 +105,6 @@ void menuDeProdutos( cadastro_produtos **ptrProdutos,
                 }
                 *contadorProdutos += addProdutos;
 
-                printf("\nVocê será redirecinado ao menu de produtos. Aperte qualquer tecla para continuar.");
-                scanf("%c", &voltar);
-
                 break;
 
             case 3:
@@ -130,9 +124,6 @@ void menuDeProdutos( cadastro_produtos **ptrProdutos,
                     printf("\n\aAVISO: Você não possui produtos cadastrados.\n");
                 }
 
-                printf("\nVocê será redirecinado ao menu de produtos. Aperte qualquer tecla para continuar.");
-                scanf("%c", &voltar);
-
                 break;
 
             case 4:
@@ -149,16 +140,11 @@ void menuDeProdutos( cadastro_produtos **ptrProdutos,
                                    *tamanhoVetorProdts);
 
                     *contadorProdutos = *contadorProdutos - 1;
-                    printf("%i", *contadorProdutos);
-                    scanf("%c", &voltar);
                 }
                 else
                 {
                     printf("\n\aAVISO: Você não possui produtos cadastrados.\n");
                 }
-
-                printf("\nVocê será redirecinado ao menu de produtos. Aperte qualquer tecla para continuar.");
-                scanf("%c", &voltar);
 
                 break;
 
@@ -188,9 +174,6 @@ void menuDeProdutos( cadastro_produtos **ptrProdutos,
                 {
                     printf("\n\aAVISO: Você não possui produtos cadastrados.\n");
                 }
-
-                printf("\nVocê será redirecinado ao menu de produtos. Aperte qualquer tecla para continuar.");
-                scanf("%c", &voltar);
 
                 break;
 
@@ -223,8 +206,6 @@ void menuDeProdutos( cadastro_produtos **ptrProdutos,
                 fclose(arquivo);
 
                 printf("\nArquivo lido com sucesso!");
-                printf("\nVocê será redirecinado ao menu de produtos. Aperte qualquer tecla para continuar.");
-                scanf("%c", &voltar);
 
                 break;
 
@@ -240,12 +221,18 @@ void menuDeProdutos( cadastro_produtos **ptrProdutos,
 
             default:
                 flag = 1;
-                printf("\n\aCódigo inválido! Digite qualquer tecla para retornar ao menu.");
+                printf("\n\aCódigo inválido!");
                 scanf("%c", &voltar);
 
                 system("cls");
 
                 break;
+            }
+
+            if(codigo != 7)
+            {
+                printf("\n\nVocê será redirecinado ao menu de produtos. Aperte qualquer tecla para continuar.");
+                scanf("%c", &voltar);
             }
         }
     }
@@ -258,13 +245,13 @@ void exibirProdutos(cadastro_produtos *ptrProdutos,
     char voltar;
 
     printf("\n\n=====\t\t||\t\t PRODUTOS \t\t||\t\t=====\n\n");
-    printf("\n\t ID     \t Produto \t Preço     \t Quantidade \t\n");
+    printf("\n\t ID      \t Produto \t Preço        \t Estoque \t\n");
 
     for(int i = 0; i<tamanhoVetorProdts; i++)
     {
         if(ptrProdutos[i]. id > 0)
         {
-            printf("\n\t %d     \t %s      \t R$ %.2f   \t %d         \t",
+    printf("\n\t %ld   \t\t %s      \t R$ %.2f      \t %i      \t",
                    ptrProdutos[i].id,
                    ptrProdutos[i].nome,
                    ptrProdutos[i].preco,
@@ -313,8 +300,19 @@ void cadastrarProdutos(cadastro_produtos *ptrProdutos,
             }
 
             getchar();
-            printf("\nDigite o nome do produto de ID com até 25 caracteres: ", ptrProdutos[i].id);
-            gets(ptrProdutos[i].nome);
+            printf("\nDigite o nome do produto de ID %li com até 25 caracteres: ", ptrProdutos[i].id);
+            fgets(ptrProdutos[i].nome,25,stdin);
+            char lenp1 = strlen(ptrProdutos[i].nome);
+            if(ptrProdutos[i].nome[lenp1 -1]=='\n')
+            {
+                ptrProdutos[i].nome [--lenp1] = 0;
+            }
+            else
+            {
+                int ch;
+                do ch = getchar();
+                while (ch != '\n'); // limpa caracteres extra
+            }
 
             do
             {
@@ -326,6 +324,7 @@ void cadastrarProdutos(cadastro_produtos *ptrProdutos,
                 {
                     printf("Quantidade inválida!");
                 }
+
             }
             while(ptrProdutos[i].estoque < 0);
 

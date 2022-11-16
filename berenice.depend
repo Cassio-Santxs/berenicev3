@@ -148,3 +148,48 @@
 	<string.h>
 	"headers.h"
 
+1668294296 source:c:\users\sandro\desktop\arthur\faculdade\berenicev3-main\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	"headers.h"
+
+1668358606 c:\users\sandro\desktop\arthur\faculdade\berenicev3-main\headers.h
+
+1668356299 source:c:\users\sandro\desktop\arthur\faculdade\berenicev3-main\produtos.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<locale.h>
+	"headers.h"
+
+1668294296 source:c:\users\sandro\desktop\arthur\faculdade\berenicev3-main\vendas.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<string.h>
+	<time.h>
+	"headers.h"
+
+1668360346 source:c:\codeblocks\berenicearthur-main\berenicev3-main\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	"headers.h"
+
+1668555007 c:\codeblocks\berenicearthur-main\berenicev3-main\headers.h
+
+1668555717 source:c:\codeblocks\berenicearthur-main\berenicev3-main\produtos.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<locale.h>
+	"headers.h"
+
+1668555569 source:c:\codeblocks\berenicearthur-main\berenicev3-main\vendas.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<string.h>
+	"headers.h"
+
