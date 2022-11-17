@@ -136,10 +136,11 @@ void menuDeProdutos( cadastro_produtos **ptrProdutos,
                     exibirProdutos(*ptrProdutos,
                                    *tamanhoVetorProdts);
 
-                    excluirProduto(*ptrProdutos,
-                                   *tamanhoVetorProdts);
-
-                    *contadorProdutos = *contadorProdutos - 1;
+                    if(excluirProduto(*ptrProdutos,
+                                   *tamanhoVetorProdts) == 1)
+                    {
+                        *contadorProdutos = *contadorProdutos - 1;
+                    }
                 }
                 else
                 {
@@ -153,21 +154,7 @@ void menuDeProdutos( cadastro_produtos **ptrProdutos,
 
                 if(*contadorProdutos > 0)
                 {
-                    i = 0;
-
-                    FILE *arquivo = fopen("produtos.bin","wb");
-                    if(arquivo == NULL)
-                    {
-                        printf("\nERRO NA ABERTURA DO ARQUIVO\n");
-                        exit(2);
-                    }
-
-                    fwrite(tamanhoVetorProdts, sizeof(int), 1, arquivo);
-                    fwrite(contadorProdutos, sizeof(int), 1, arquivo);
-                    fwrite(ptrProdutos, sizeof(cadastro_produtos), 1, arquivo);
-
-                    fclose(arquivo);
-
+                    salvarProdutos(*ptrProdutos, *tamanhoVetorProdts, *contadorProdutos);
                     printf("\nArquivo salvo com sucesso!");
                 }
                 else
@@ -180,31 +167,7 @@ void menuDeProdutos( cadastro_produtos **ptrProdutos,
             case 6:
                 flag = 0;
 
-                i = 0;
-
-                FILE *arquivo = fopen("produtos.bin","rb");
-
-                if(arquivo == NULL)
-                {
-                    printf("ERRO NA ABERTURA DO ARQUIVO");
-                    exit(2);
-                }
-
-                printf("%i\n", ptrProdutos);
-                printf("%i\n", *ptrProdutos);
-
-
-                fread(tamanhoVetorProdts, sizeof(int), 1, arquivo);
-                fread(ptrProdutos, sizeof(cadastro_produtos), 1, arquivo);
-                fread(contadorProdutos, sizeof(int), 1, arquivo);
-
-
-                printf("%i\n", ptrProdutos);
-                printf("%i\n", *ptrProdutos);
-
-
-                fclose(arquivo);
-
+                lerProdutos(*ptrProdutos, *tamanhoVetorProdts, *contadorProdutos);
                 printf("\nArquivo lido com sucesso!");
 
                 break;
@@ -251,7 +214,7 @@ void exibirProdutos(cadastro_produtos *ptrProdutos,
     {
         if(ptrProdutos[i]. id > 0)
         {
-    printf("\n\t %ld   \t\t %s      \t R$ %.2f      \t %i      \t",
+            printf("\n\t %ld   \t\t %s      \t R$ %.2f      \t %i      \t",
                    ptrProdutos[i].id,
                    ptrProdutos[i].nome,
                    ptrProdutos[i].preco,
@@ -421,12 +384,9 @@ void atualizarProduto(cadastro_produtos *ptrProdutos,
 
     printf("\n\n=====\t\t||\t\t          NOVO           \t\t||\t\t=====\n\n");
     printf("\n\t %d     \t %s      \t R$ %.2f   \t %d         \t", ptrProdutos[indice].id, ptrProdutos[indice].nome, ptrProdutos[indice].preco, ptrProdutos[indice].estoque);
-
-    printf("\nVocê será redirecinado ao menu de produtos. Aperte qualquer tecla para continuar.");
-    scanf("%c", &voltar);
 }
 
-void excluirProduto(cadastro_produtos *ptrProdutos,
+int excluirProduto(cadastro_produtos *ptrProdutos,
                     int *tamanhoVetorProdts)
 {
 
@@ -434,7 +394,8 @@ void excluirProduto(cadastro_produtos *ptrProdutos,
 
     int flag = 0,
         indice,
-        confirma;
+        confirma,
+        retorno = 0;
 
     char voltar;
 
@@ -473,15 +434,15 @@ void excluirProduto(cadastro_produtos *ptrProdutos,
         case 1:
             flag = 0;
             ptrProdutos[indice].id = 0;
-            printf("\nProduto excluido com sucesso. Você será redirecionado ao menu de produtos, aperte qualquer tecla para continuar");
-            scanf("%c", &voltar);
+            printf("\nProduto excluido com sucesso.");
+            retorno = 1;
 
             break;
 
         case 2:
             flag = 0;
-            printf("\nAção cancelada. Você será redirecionado ao menu de produtos, aperte qualquer tecla para continuar");
-            scanf("%c", &voltar);
+            printf("\nAção cancelada.");
+            retorno = 0;
 
             break;
 
@@ -493,6 +454,8 @@ void excluirProduto(cadastro_produtos *ptrProdutos,
             break;
         }
     }
+
+    return retorno;
 }
 
 int procuraProduto(cadastro_produtos *ptrProdutos,
@@ -527,9 +490,53 @@ int procuraProduto(cadastro_produtos *ptrProdutos,
     return retorno;
 }
 
-/*
-Codigo do excluir
-            int i;
-            ptrProdutos[i].id = 0;
-            (*contagemProdutos)--;
-            */
+void salvarProdutos(cadastro_produtos *ptrProdutos,
+                    int tamanhoVetorProdts,
+                    int contadorProdutos)
+{
+    int i = 0;
+
+    FILE *arquivo = fopen("produtos.txt","w");
+    if(arquivo == NULL)
+    {
+        printf("\nERRO NA ABERTURA DO ARQUIVO\n");
+        exit(2);
+    }
+    printf("TESTE");
+    fprintf(arquivo, "\nTamanhoVetorProdts: %d", tamanhoVetorProdts);
+    fprintf(arquivo, "\nContadorProdutos: %d", contadorProdutos);
+    printf("TESTE");
+
+    for(i = 0; i < tamanhoVetorProdts; i++)
+    {
+        fprintf(arquivo, "\nID: %ld", ptrProdutos[i].id);
+        fprintf(arquivo, "\nProduto: %s", ptrProdutos[i].nome);
+        fprintf(arquivo, "\nEstoque: %d", ptrProdutos[i].estoque);
+        fprintf(arquivo, "\nValor: %.2f", ptrProdutos[i].preco);
+    }
+    printf("TESTE");
+    fclose(arquivo);
+}
+
+void lerProdutos(cadastro_produtos *ptrProdutos,
+                 int *tamanhoVetorProdts,
+                 int *contadorProdutos)
+{
+    int i = 0;
+
+    FILE *arquivo = fopen("produtos.txt","r");
+
+    if(arquivo == NULL)
+    {
+        printf("ERRO NA ABERTURA DO ARQUIVO");
+        exit(2);
+    }
+
+    for(i = 0; i < tamanhoVetorProdts; i++) //usado para printar
+    {
+        fscanf(arquivo, "%d %d %ld %s %d %.2f", tamanhoVetorProdts, contadorProdutos, ptrProdutos[i].id, ptrProdutos[i].nome, ptrProdutos[i].estoque, ptrProdutos[i].preco);
+    }
+
+    fclose(arquivo);
+
+}

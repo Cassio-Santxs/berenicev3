@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
+#include <time.h>
 
 #include "headers.h"
 
@@ -41,13 +42,10 @@ void menuDeVendas(cadastro_produtos *ptrProdutos,
                 compras(ptrProdutos,
                         tamanhoVetorProdts);
 
-                printf("\nVocê será redirecionado a tela de escolha de forma de pagamento. Aperte qualquer tecla para continuar.");
-                scanf("%c", &voltar);
-
-
                 for(i  = 0; i < tamanhoVetorProdts; i++)
                 {
                     ptrProdutos[i].subtotal = 0;
+                    ptrProdutos[i].qtdCompra = 0;
                 }
                 break;
 
@@ -57,8 +55,7 @@ void menuDeVendas(cadastro_produtos *ptrProdutos,
                 system("cls");
                 relatorioDeVendasOuCarrinho(ptrProdutos,
                                             tamanhoVetorProdts,
-                                            codigo,
-                                            quantidade);
+                                            codigo);
 
                 break;
 
@@ -97,8 +94,7 @@ void compras(cadastro_produtos *ptrProdutos,
     long int iddesejado,
          indice;
 
-    int quantidade = 0,
-        encerrarCompra = 1,
+    int encerrarCompra = 1,
         codigo = 1,
         i = 0;
 
@@ -132,9 +128,9 @@ void compras(cadastro_produtos *ptrProdutos,
         do
         {
             printf("\nDigite a quantidade desejada: ");
-            scanf("%d",&quantidade);
+            scanf("%d",&ptrProdutos[indice].qtdCompra);
 
-            if(quantidade > ptrProdutos[indice].estoque)
+            if(ptrProdutos[indice].qtdCompra > ptrProdutos[indice].estoque)
             {
                 if(ptrProdutos[indice].estoque == 0)
                 {
@@ -150,9 +146,9 @@ void compras(cadastro_produtos *ptrProdutos,
             {
 //fechamento da validacao de estoque
 
-                ptrProdutos[indice].qtdVendida = ptrProdutos[indice].qtdVendida + quantidade;
-                ptrProdutos[indice].estoque = ptrProdutos[indice].estoque - quantidade;
-                ptrProdutos[indice].subtotal = ptrProdutos[indice].subtotal + (quantidade * ptrProdutos[indice].preco);
+                ptrProdutos[indice].qtdVendida = ptrProdutos[indice].qtdVendida + ptrProdutos[indice].qtdCompra;
+                ptrProdutos[indice].estoque = ptrProdutos[indice].estoque - ptrProdutos[indice].qtdCompra;
+                ptrProdutos[indice].subtotal = ptrProdutos[indice].subtotal + (ptrProdutos[indice].qtdCompra * ptrProdutos[indice].preco);
                 ptrProdutos[indice].valorVendido = ptrProdutos[indice].valorVendido + ptrProdutos[indice].subtotal;
 
 //calculo do subtotal da compra
@@ -161,7 +157,7 @@ void compras(cadastro_produtos *ptrProdutos,
                 break;
             }
         }
-        while(quantidade > ptrProdutos[indice].estoque);
+        while(ptrProdutos[indice].qtdCompra > ptrProdutos[indice].estoque);
 
         printf("\n\nDeseja realizar outra compra? Digite 3 para NÃO ou qualquer outro número para SIM: ");
         scanf("%i", &encerrarCompra);
@@ -170,8 +166,7 @@ void compras(cadastro_produtos *ptrProdutos,
 
     relatorioDeVendasOuCarrinho(ptrProdutos,
                                 tamanhoVetorProdts,
-                                codigo,
-                                quantidade);
+                                codigo);
 
     for(i = 0; i<tamanhoVetorProdts; i++)
     {
@@ -179,14 +174,19 @@ void compras(cadastro_produtos *ptrProdutos,
     }
 
     printf("\nValor total de sua compra: R$ %0.2f.", subtotalFinal);
+
+    formaDePagamento (subtotalFinal);
+    salvarVenda(ptrProdutos,
+                tamanhoVetorProdts);
+
+
 }
 
 // Caso o switch case seja 1 a função mostrará um carrinho de compras
 // caso seja 2, mostrará o relatório de vendas
 void relatorioDeVendasOuCarrinho(cadastro_produtos *ptrProdutos,
                                  int tamanhoVetorProdts,
-                                 int codigo,
-                                 int quantidade)
+                                 int codigo)
 {
     int i,
         j,         // Indices a serem percorridos
@@ -219,18 +219,17 @@ void relatorioDeVendasOuCarrinho(cadastro_produtos *ptrProdutos,
     {
         system("cls");
         printf("\n\n=====\t\t||\t\t CARRINHO DE COMPRAS \t\t||\t\t=====\n\n");
-        printf("\t ID       \t Produto     \t Estoque       \t Quantidade vendida    \t Valor vendido   \t\n\n");
-
+        printf("\tID         \tProduto              \tEstoque       \tQuantidade vendida    \tValor vendido   \t\n");
 
         for(int i = 0; i<tamanhoVetorProdts; i++)
         {
-            if(ptrProdutos[i].id > 0)
+            if(ptrProdutos[i].id > 0 && ptrProdutos[i].qtdCompra > 0)
             {
-        printf("\t %ld      \t %s          \t %i            \t %i                    \t R$ %.2f         \t\n",
+        printf("\t%ld        \t%s                   \t%i            \t%i                    \tR$ %.2f         \t\n",
                        ptrProdutos[i].id,
                        ptrProdutos[i].nome,
                        ptrProdutos[i].estoque,
-                       quantidade,
+                       ptrProdutos[i].qtdCompra,
                        ptrProdutos[i].subtotal);
             }
         }
@@ -238,13 +237,14 @@ void relatorioDeVendasOuCarrinho(cadastro_produtos *ptrProdutos,
     else
     {
         printf("\n\n=====\t\t||\t\t RELATÓRIO DE VENDAS \t\t||\t\t=====\n\n");
-        printf("\t ID       \t Produto   \t Estoque      \t Quantidade vendida    \t Valor vendido   \t\n\n");
+        printf("\t ID       \t Produto           \t Estoque      \t Quantidade vendida    \t Valor vendido   \t\n\n");
 
         for(int i = 0; i<tamanhoVetorProdts; i++)
         {
             if(ptrProdutos[i].id > 0)
             {
-        printf("\t %ld      \t %s        \t %i           \t %i                    \t R$ %.2f         \t\n",
+        printf("\t %ld      \t %s              \t\t %i           \t %i                    \t R$ %.2f         \t\n",
+
                        ptrProdutos[i].id,
                        ptrProdutos[i].nome,
                        ptrProdutos[i].estoque,
@@ -253,22 +253,22 @@ void relatorioDeVendasOuCarrinho(cadastro_produtos *ptrProdutos,
             }
         }
     }
+
+
 }
 
-/*void formaDePagamento(){
+void formaDePagamento(float subtotalFinal )
 
-    flistaDeCompras();
+{
+    // flistaDeCompras();
 
     printf("\n\n=====\t\t||\t\t ESCOLHA DA FORMA DE PAGAMENTO \t\t||\t\t=====\n\n");
 
     int i = 0, flag = 1, flag2, formaDePagamento, quantidadeDeParcelas, precisaDeTroco;
-    float total = 0, valorEntreguePeloCliente, troco, valorDaParcela;
+    float  valorEntreguePeloCliente, troco, valorDaParcela;
     char sair;
 
-    for(i; i<5; i++)
-    {
-        total = total + ;
-    }
+
 
     printf("\nAgora escolha a forma de pagamento. Temos o pagamento A VISTA e o pagamento A PRAZO.\n\nNo pagamento A VISTA, em compras de ate R\$ 50.00, damos 5 porcento de desconto, em compras de R\$ 50.00 a R\$ 99.99 oferecemos 10 porcento de desconto e em compras acima de R\$ 99.99 promovemos 18 porcento de desconto.\n\nNo pagamento A PRAZO, em compras parceladas em ate 3x temos um acrescimo de 5 porcento e, em compras com parcelas acima de 3x, um acrescimo de 8 porcento");
 
@@ -285,17 +285,17 @@ void relatorioDeVendasOuCarrinho(cadastro_produtos *ptrProdutos,
 
         case 1:
             flag = 0;
-            if(total <= 50)
+            if(subtotalFinal <= 50)
             {
-                total = total - (total * 0.05);
+                subtotalFinal = subtotalFinal - (subtotalFinal * 0.05);
             }
-            else if((total > 50)&&(total < 100))
+            else if((subtotalFinal > 50)&&(subtotalFinal < 100))
             {
-                total = total - (total * 0.1);
+                subtotalFinal = subtotalFinal - (subtotalFinal* 0.1);
             }
             else
             {
-                total = total - (total * 0.18);
+                subtotalFinal = subtotalFinal - (subtotalFinal* 0.18);
             }
 
             break;
@@ -315,11 +315,11 @@ void relatorioDeVendasOuCarrinho(cadastro_produtos *ptrProdutos,
 
             if(quantidadeDeParcelas <= 3)
             {
-                total = total + (total * 0.05);
+                subtotalFinal= subtotalFinal+ (subtotalFinal* 0.05);
             }
             else
             {
-                total = total + (total * 0.08);
+                subtotalFinal = subtotalFinal + (subtotalFinal * 0.08);
             }
 
             break;
@@ -333,7 +333,7 @@ void relatorioDeVendasOuCarrinho(cadastro_produtos *ptrProdutos,
         }
     }
 
-    printf("\nTotal da compra: R$%.2f\n", total);
+    printf("\nTotal da compra: R$%.2f\n", subtotalFinal);
 
     if(formaDePagamento==1)
     {
@@ -347,47 +347,67 @@ void relatorioDeVendasOuCarrinho(cadastro_produtos *ptrProdutos,
 
         if(precisaDeTroco != 1)
         {
-            while(valorEntreguePeloCliente != total)
+            while(valorEntreguePeloCliente != subtotalFinal)
             {
-                printf("\nValor inválido, sua compra tem um total de: R$%f. Por favor, nos entregue o mesmo valor: ", total);
+                printf("\nValor inválido, sua compra tem um total de: R$%f. Por favor, nos entregue o mesmo valor: ", subtotalFinal);
                 scanf("%f", &valorEntreguePeloCliente);
                 getchar();
             }
         }
 
-        while (valorEntreguePeloCliente<total)
+        while (valorEntreguePeloCliente<subtotalFinal)
         {
-            printf("\nValor insuficiente, sua compra tem um total de: R$%.2f. Digite um valor válido: ", total);
+            printf("\nValor insuficiente, sua compra tem um total de: R$%.2f. Digite um valor válido: ", subtotalFinal);
             scanf("%f", &valorEntreguePeloCliente);
             getchar();
         }
-        troco = valorEntreguePeloCliente - total;
+        troco = valorEntreguePeloCliente - subtotalFinal;
         if(precisaDeTroco == 1)
         {
             printf("\nAqui esta seu troco: R$%.2f\n", troco);
+
         }
     }
     else
     {
-        valorDaParcela = total / quantidadeDeParcelas;
+        valorDaParcela = subtotalFinal / quantidadeDeParcelas;
         printf("\nO valor de suas parcelas ficou em: R$%.2f\n", valorDaParcela);
     }
 
     printf("\nMuito obrigado pela sua compra, volte sempre!\n");
 
-    for (int i=0; i<5; i++)
-    {
-        compras[i] = 0;
-        subtotal[i] = 0;
-    }
-
-    printf("\nVocê será redirecionado ao menu, digite qualquer tecla para continuar");
-    scanf("%c", &sair);
-    system("cls");
-
-
     return 0;
 }
-*/
 
+void salvarVenda(cadastro_produtos *ptrProdutos,
+              int tamanhoVetorProdts) //CUPOM FISCAL
+{
+    int i = 0;
+    char nomeArquivo[40];
 
+    struct tm *timenow;
+
+    time_t now = time(NULL);
+    timenow = gmtime(&now);
+
+    strftime(nomeArquivo, sizeof(nomeArquivo), "%Y-%m-%d_%H-%M-%S.txt", timenow); //adicionando nomenclatura e tamanho
+
+    FILE *arquivo = fopen(nomeArquivo, "w"); //abrindo arquito para escrita
+
+    if(nomeArquivo == NULL)
+    {
+        printf("ERRO NA ABERTURA DO ARQUIVO");
+        exit(1);
+    }
+
+    for(i = 0; i < tamanhoVetorProdts; i++) //usado para printar
+    {
+        fprintf(arquivo, "\nID: %ld", ptrProdutos[i].id);
+        fprintf(arquivo, "\nProduto: %s", ptrProdutos[i].nome);
+        fprintf(arquivo, "\nQuantidade vendida: %d", ptrProdutos[i].qtdCompra);
+        fprintf(arquivo, "\nValor vendido: %.2f", ptrProdutos[i].subtotal);
+    }
+
+    fclose(arquivo);
+    printf("\nNota fiscal salva com sucesso!");
+}

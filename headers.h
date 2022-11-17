@@ -7,7 +7,8 @@ typedef struct
 
     long int id;
     int estoque,
-        qtdVendida;
+        qtdVendida,
+        qtdCompra;
 
     float preco,
           subtotal,
@@ -30,8 +31,16 @@ void cadastrarProdutos(cadastro_produtos *ptrProdutos,
 void atualizarProduto(cadastro_produtos *ptrProdutos,
                       int tamanhoVetorProdts);
 
-void excluirProduto(cadastro_produtos *ptrProdutos,
+int excluirProduto(cadastro_produtos *ptrProdutos,
                     int *tamanhoVetorProdts);
+
+void salvarProdutos(cadastro_produtos *ptrProdutos,
+                      int tamanhoVetorProdts,
+                      int contadorProdutos);
+
+void lerProdutos(cadastro_produtos *ptrProdutos,
+                      int *tamanhoVetorProdts,
+                      int *contadorProdutos);
 
 // Procura um produto com codigo id no vetor de produtos,
 // se encontrar devolve a posicação no vetor, ou seja a variavel i
@@ -45,14 +54,18 @@ void menuDeVendas(cadastro_produtos *ptrProdutos,
                   int tamanhoVetorProdts);
 
 void compras(cadastro_produtos *ptrProdutos,
-              int tamanhoVetorProdts);
+             int tamanhoVetorProdts);
 
 void carrinho(cadastro_produtos *ptrProdutos,
               int tamanhoVetorProdts);
 
 void relatorioDeVendasOuCarrinho(cadastro_produtos *ptrProdutos,
-                    int tamanhoVetorProdts,
-                    int codigo,
-                    int quantidade);
+                                 int tamanhoVetorProdts,
+                                 int codigo);
+
+void formaDePagamento(float subtotalFinal );
+
+void salvarVenda(cadastro_produtos *ptrProdutos,
+              int tamanhoVetorProdts);
 
 #endif // HEADERS_H_INCLUDED

@@ -193,3 +193,26 @@
 	<string.h>
 	"headers.h"
 
+1668539278 source:c:\berenicev3-main\berenicev3-main\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	"headers.h"
+
+1668645825 c:\berenicev3-main\berenicev3-main\headers.h
+
+1668645813 source:c:\berenicev3-main\berenicev3-main\produtos.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<locale.h>
+	"headers.h"
+
+1668643245 source:c:\berenicev3-main\berenicev3-main\vendas.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<string.h>
+	<time.h>
+	"headers.h"
+
