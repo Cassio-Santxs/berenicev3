@@ -380,7 +380,7 @@ void formaDePagamento(float subtotalFinal )
 }
 
 void salvarVenda(cadastro_produtos *ptrProdutos,
-              int tamanhoVetorProdts) //CUPOM FISCAL
+              int tamanhoVetorProdts)
 {
     int i = 0;
     char nomeArquivo[40];
@@ -390,9 +390,9 @@ void salvarVenda(cadastro_produtos *ptrProdutos,
     time_t now = time(NULL);
     timenow = gmtime(&now);
 
-    strftime(nomeArquivo, sizeof(nomeArquivo), "%Y-%m-%d_%H-%M-%S.txt", timenow); //adicionando nomenclatura e tamanho
+    strftime(nomeArquivo, sizeof(nomeArquivo), "%Y-%m-%d_%H-%M-%S.txt", timenow);
 
-    FILE *arquivo = fopen(nomeArquivo, "w"); //abrindo arquito para escrita
+    FILE *arquivo = fopen(nomeArquivo, "w");
 
     if(nomeArquivo == NULL)
     {
@@ -400,7 +400,7 @@ void salvarVenda(cadastro_produtos *ptrProdutos,
         exit(1);
     }
 
-    for(i = 0; i < tamanhoVetorProdts; i++) //usado para printar
+    for(i = 0; i < tamanhoVetorProdts; i++)
     {
         fprintf(arquivo, "\nID: %ld", ptrProdutos[i].id);
         fprintf(arquivo, "\nProduto: %s", ptrProdutos[i].nome);
